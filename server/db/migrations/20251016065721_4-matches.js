@@ -3,7 +3,7 @@
  * @returns { Promise<void> }
  */
 export function up(knex) {
-  return knex.schema.table('matches', (table) => {
+  return knex.schema.createTable('matches', (table) => {
     table.string('id').primary()
     table.string('relationship_id')
     table.string('movie_id')

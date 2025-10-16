@@ -3,7 +3,7 @@
  * @returns { Promise<void> }
  */
 export function up(knex) {
-  return knex.schema.table('movies', (table) => {
+  return knex.schema.createTable('movies', (table) => {
     table.string('id').primary()
     table.string('imdb_id').unique()
     table.string('title')
