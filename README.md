@@ -30,28 +30,6 @@ I want a watch button that takes you to a movie website to watch the movie
 
 will add more when i come across things ive missed 
 will also flesh out the steps more when doing them 
-# Boilerplate: Fullstack with Sass
-
-## Setup
-
-### What's included
-
-This repo includes:
-
-* a single, simple API endpoint (`/api/v1/fruits`)
-* a single React component (`<App />`)
-* basic routing setup (`routes.tsx`)
-* an example database module (`server/db/fruits.js`)
-* an API client module (`client/apis/fruits.js`)
-* configuration for Vitest and testing library
-* configuration for server-side debugging in VS Code
-* configuration for preprocessing Sass
-
-### Installation
-
-#### **From the Github UI**
-
-See the instructions [here](https://docs.github.com/en/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template) to use Github's feature to create a new repo from a template.
 
 ```
 git clone [your-project-ssh-address]
