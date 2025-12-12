@@ -31,12 +31,7 @@ I want a watch button that takes you to a movie website to watch the movie
 will add more when i come across things ive missed 
 will also flesh out the steps more when doing them 
 
-```
-git clone [your-project-ssh-address]
-cd [your-project-name]
-npm install # to install dependencies
-npm run dev # to start the dev server
-```
+
 
 You can find the server running on [http://localhost:3000](http://localhost:3000) and the client running on [http://localhost:5173](http://localhost:5173).
 
