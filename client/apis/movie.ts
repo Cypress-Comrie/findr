@@ -18,5 +18,8 @@ export async function getMovieDetails(movieId: number) {
 }
 
 export async function searchMovies(query: string) {
-  const response = await request.get(`${BASE_URL}/search/movie`)
+  const response = await request
+    .get(`${BASE_URL}/search/movie/${query}`)
+    .query({ API_KEY: API_KEY })
+  return response.body as MovieData
 }
