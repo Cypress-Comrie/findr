@@ -3,23 +3,74 @@ import { MovieData } from '../../models/movies'
 import { API_KEY } from '../TMDB.js'
 import { BASE_URL } from '../TMDB.js'
 
-export async function getPopularMovies() {
+export async function getPopularMovies(): Promise<MovieData[]> {
   const response = await request
     .get(`${BASE_URL}/movie/popular`)
     .query({ api_key: API_KEY })
-  return response.body.results as MovieData[]
+
+  // Transform TMDB data to match Movie model
+  const tmdbMovies = response.body.results
+
+  return tmdbMovies.map(
+    (movie: any): MovieData => ({
+      tmdb_id: movie.id,
+      title: movie.title,
+      release_year: movie.release_date
+        ? new Date(movie.release_date).getFullYear()
+        : 0, // Default to 0 if no date
+      genres: movie.genre_ids ? movie.genre_ids.join(',') : '',
+      poster_url: movie.poster_path
+        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+        : '',
+      rating: movie.vote_average || 0,
+      description: movie.overview || '',
+    }),
+  )
 }
 
-export async function getMovieDetails(movieId: number) {
+export async function getMovieDetails(movieId: number): Promise<MovieData> {
   const response = await request
     .get(`${BASE_URL}/movie/${movieId}`)
     .query({ api_key: API_KEY })
-  return response.body as MovieData
+
+  const movie = response.body
+
+  return {
+    tmdb_id: movie.id,
+    title: movie.title,
+    release_year: movie.release_date
+      ? new Date(movie.release_date).getFullYear()
+      : 0,
+    genres: movie.genres ? movie.genres.map((g: any) => g.name).join(', ') : '',
+    poster_url: movie.poster_path
+      ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+      : '',
+    rating: movie.vote_average || 0,
+    description: movie.overview || '',
+  }
 }
 
-export async function searchMovies(query: string) {
-  const response = await request
-    .get(`${BASE_URL}/search/movie/${query}`)
-    .query({ API_KEY: API_KEY })
-  return response.body as MovieData
+export async function searchMovies(query: string): Promise<MovieData[]> {
+  const response = await request.get(`${BASE_URL}/search/movie`).query({
+    api_key: API_KEY,
+    query: query,
+  })
+
+  const tmdbMovies = response.body.results
+
+  return tmdbMovies.map(
+    (movie: any): MovieData => ({
+      tmdb_id: movie.id,
+      title: movie.title,
+      release_year: movie.release_date
+        ? new Date(movie.release_date).getFullYear()
+        : 0,
+      genres: movie.genre_ids ? movie.genre_ids.join(',') : '',
+      poster_url: movie.poster_path
+        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+        : '',
+      rating: movie.vote_average || 0,
+      description: movie.overview || '',
+    }),
+  )
 }
