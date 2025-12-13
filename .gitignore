@@ -17,7 +17,6 @@ coverage/*
 
 # Dotenv env settings
 .env
-VITE_TMDB_API_KEY= 1db426c802cdafb94a55720301ec96b5
 .env.local
 .env.development.local
 .env.test.local
@@ -32,6 +31,3 @@ VITE_TMDB_API_KEY= 1db426c802cdafb94a55720301ec96b5
 
 
 
-
-const BASE_URL = 'https://api.themoviedb.org/3';
-const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
