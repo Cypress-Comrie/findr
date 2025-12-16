@@ -1,7 +1,11 @@
 import { getPopularMovies } from '../apis/movie'
 import { useQuery } from '@tanstack/react-query'
-
+import { useState } from 'react'
+// TODO save to personal watch list if swiped yes
+// TODO check if parnters swiped yes on same
 const MovieCards = () => {
+  const [currentIndex, setCurrentIndex] = useState(0)
+
   const {
     data: movies = [],
     isLoading,
@@ -14,7 +18,7 @@ const MovieCards = () => {
       console.log(' Received movies:', allMovies)
       console.log(' Number of movies:', allMovies?.length)
 
-      return allMovies.slice(0, 5)
+      return allMovies.slice(0, 30)
     },
   })
 
