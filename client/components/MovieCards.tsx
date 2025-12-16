@@ -25,45 +25,38 @@ const MovieCards = () => {
   if (error) {
     return 'Error Loading'
   }
-
+  // Using figure instead of a div tag -- learnt figure is better for stand alone content perfect for the posters
+  // fix responsiveness of posters!!
   return (
     <div className="flex flex-col gap-6 p-6 max-w-4xl mx-auto">
       {movies.map((movie) => (
         <div
           key={movie.tmdb_id}
-          className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition"
+          className="card lg:card-side bg-base-100 shadow-xl"
         >
-          <div className="flex flex-col md:flex-row gap-6">
+          <figure className="relative w-full max-w-sm md:max-w-lg lg:max-w-2xl h-96">
             {/* Movie Poster */}
             <img
-              className="w-48 h-72 object-cover rounded-lg flex-shrink-0 mx-auto md:mx-0"
-              src={movie.poster_url || '/placeholder-poster.jpg'}
+              src={movie.poster_url}
               alt={movie.title}
+              className="h-full w-full object-cover"
             />
+          </figure>
 
-            {/* Movie Details */}
-            <div className="flex-1 flex flex-col items-center text-center space-y-3">
-              <h5 className="text-2xl font-bold text-gray-900 max-w-sm">
-                {movie.title}
-              </h5>
+          {/* Movie Details */}
+          <div className="card-body">
+            <h5 className="card-title text-lg">{movie.title}</h5>
 
-              <p className="text-sm leading-snug text-gray-700 max-w-xs px-4">
-                {movie.description || 'No description available.'}
-              </p>
+            <p className="text-sm ">
+              {movie.description || 'No description available.'}
+            </p>
 
-              <div className="text-sm text-gray-600">
-                <p>Year: {movie.release_year || 'N/A'}</p>
-                <p>
-                  Rating: ⭐ {movie.rating ? movie.rating.toFixed(1) : 'N/A'}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                className="inline-flex items-center text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 font-medium rounded-lg text-sm px-4 py-2.5"
-              >
-                View Details
-              </button>
+            <div className="text-sm opacity-70">
+              <p>Year: {movie.release_year || 'N/A'}</p>
+              <p>Rating: ⭐ {movie.rating ? movie.rating.toFixed(1) : 'N/A'}</p>
+            </div>
+            <div className="card-actions justify-end">
+              <button className="btn btn-primary">View</button>
             </div>
           </div>
         </div>
