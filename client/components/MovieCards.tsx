@@ -26,7 +26,7 @@ const MovieCards = () => {
     return 'Error Loading'
   }
   // Using figure instead of a div tag -- learnt figure is better for stand alone content perfect for the posters
-  // fix responsiveness of posters!!
+
   return (
     <div className="flex flex-col gap-6 p-6 max-w-4xl mx-auto">
       {movies.map((movie) => (
