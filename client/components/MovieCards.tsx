@@ -22,7 +22,7 @@ const MovieCards = () => {
       return allMovies.slice(0, 30)
     },
   })
-
+  // lets us know which way we swapped and what we want to do with that
   const onSwipe = (direction: string, movie: any) => {
     console.log(`You swiped ${direction} on ${movie}`)
 
@@ -35,6 +35,12 @@ const MovieCards = () => {
     }
   }
 
+  // lets us know its seen the movie leave and changed to the next
+  const onCardLeftScreen = (movie: any) => {
+    console.log(`${movie.title} left the screen`)
+    setCurrentIndex((prev) => prev + 1)
+  }
+
   if (isLoading) {
     return 'loading...'
   }
@@ -43,7 +49,19 @@ const MovieCards = () => {
     return 'Error Loading'
   }
   // Using figure instead of a div tag -- learnt figure is better for stand alone content perfect for the posters
-
+  if (currentIndex >= movies.length) {
+    return (
+      <div className="flex flec-col items-center justify-center min-h-screen gap-4">
+        <h2 className="text-3xl font-bold">No more movies! 🎬</h2>
+        <button
+          className="btn btn-primary gap-2"
+          onClick={() => setCurrentIndex(0)}
+        >
+          Start Over
+        </button>
+      </div>
+    )
+  }
   return (
     <div className="flex flex-col items-center justify-content min-h-screen p-6 bg-base-200">
       {/* Stacked Cards Container */}
