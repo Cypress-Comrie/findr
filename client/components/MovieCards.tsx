@@ -1,6 +1,7 @@
 import { getPopularMovies } from '../apis/movie'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
+import TinderCard from 'react-tinder-card'
 // TODO save to personal watch list if swiped yes
 // TODO check if parnters swiped yes on same
 const MovieCards = () => {
@@ -22,6 +23,18 @@ const MovieCards = () => {
     },
   })
 
+  const onSwipe = (direction: string, movie: any) => {
+    console.log(`You swiped ${direction} on ${movie}`)
+
+    if (direction == 'right') {
+      console.log('Added to watchlist:', movie.title)
+    }
+
+    if (direction == 'left') {
+      console.log('you passed on:', movie.title)
+    }
+  }
+
   if (isLoading) {
     return 'loading...'
   }
@@ -32,13 +45,18 @@ const MovieCards = () => {
   // Using figure instead of a div tag -- learnt figure is better for stand alone content perfect for the posters
 
   return (
-    <div className="flex flex-col gap-6 p-6 max-w-4xl mx-auto">
-      {movies.map((movie) => (
+    <div className="flex flex-col items-center justify-content min-h-screen p-6 bg-base-200">
+      {/* Stacked Cards Container */}
+      <div className="stack w-full max-w-sm md:max-w-lg lg:max-w-2xl"></div>
+      {movies.slice(0, 3).map((movie, index) => (
         <div
           key={movie.tmdb_id}
-          className="card lg:card-side bg-base-100 shadow-xl"
+          className="card bg-base-100 shadow-xl"
+          style={{
+            transform: `translateY(${index * -100}px)`,
+          }}
         >
-          <figure className="relative w-full max-w-sm md:max-w-lg lg:max-w-2xl h-96">
+          <figure className="h-96">
             {/* Movie Poster */}
             <img
               src={movie.poster_url}
@@ -47,15 +65,15 @@ const MovieCards = () => {
             />
           </figure>
 
-          {/* Movie Details */}
+          {/* Movie Title */}
           <div className="card-body">
-            <h5 className="card-title text-lg">{movie.title}</h5>
-
-            <p className="text-sm ">
+            <h5 className="card-title">{movie.title}</h5>
+            {/* Movie Description */}
+            <p className="text-sm line-clamp-3 ">
               {movie.description || 'No description available.'}
             </p>
-
-            <div className="text-sm opacity-70">
+            {/* Movie Release/Rating */}
+            <div className="text-sm opacity-70 space-y-1">
               <p>Year: {movie.release_year || 'N/A'}</p>
               <p>Rating: ⭐ {movie.rating ? movie.rating.toFixed(1) : 'N/A'}</p>
             </div>
