@@ -1,12 +1,14 @@
 import { getPopularMovies } from '../apis/movie'
 import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import TinderCard from 'react-tinder-card'
 import { Flag, HeartCrack, Heart } from 'lucide-react'
-// TODO save to personal watch list if swiped yes
+import { useWatchlist } from '../context/WatchlistContext'
 // TODO check if parnters swiped yes on same
 const MovieCards = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
+  const cardRef = useRef<any>(null)
+  const { addToWatchlist } = useWatchlist()
 
   const {
     data: movies = [],
@@ -25,10 +27,11 @@ const MovieCards = () => {
   })
   // lets us know which way we swapped and what we want to do with that
   const onSwipe = (direction: string, movie: any) => {
-    console.log(`You swiped ${direction} on ${movie}`)
+    console.log(`You swiped ${direction} on ${movie.title}`)
 
     if (direction == 'right') {
       console.log('Added to watchlist:', movie.title)
+      addToWatchlist(movie)
     }
 
     if (direction == 'left') {
@@ -63,53 +66,55 @@ const MovieCards = () => {
       </div>
     )
   }
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-base-200">
       {/* Card Stack Container */}
       <div className="relative w-full max-w-sm md:max-w-md lg:max-w-lg h-[600px] mb-8">
-        {movies.slice(currentIndex, currentIndex + 3).map((movie, index) => (
+        {/* Only render the current swipeable card - no background cards */}
+        {currentIndex < movies.length && (
           <TinderCard
-            key={movie.tmdb_id}
-            onSwipe={(dir) => onSwipe(dir, movie)}
-            onCardLeftScreen={() => onCardLeftScreen(movie)}
+            ref={cardRef}
+            key={movies[currentIndex].tmdb_id}
+            onSwipe={(dir) => onSwipe(dir, movies[currentIndex])}
+            onCardLeftScreen={() => onCardLeftScreen(movies[currentIndex])}
             preventSwipe={['up', 'down']}
             className="absolute w-full h-full"
             swipeRequirementType="position"
             swipeThreshold={100}
           >
-            <div
-              className="card bg-base-100 shadow-2xl h-full"
-              style={{
-                transform: `translateY(${index * 10}px) scale(${1 - index * 0.03})`,
-                opacity: index === 0 ? 1 : 0.5,
-                pointerEvents: index === 0 ? 'auto' : 'none',
-              }}
-            >
+            <div className="card bg-base-100 shadow-2xl h-full">
               <figure className="h-[450px]">
                 <img
-                  src={movie.poster_url}
-                  alt={movie.title}
+                  src={movies[currentIndex].poster_url}
+                  alt={movies[currentIndex].title}
                   className="h-full w-full object-cover"
                 />
               </figure>
 
               <div className="card-body">
-                <h2 className="card-title text-xl">{movie.title}</h2>
+                <h2 className="card-title text-xl">
+                  {movies[currentIndex].title}
+                </h2>
                 <p className="text-sm line-clamp-2">
-                  {movie.description || 'No description available.'}
+                  {movies[currentIndex].description ||
+                    'No description available.'}
                 </p>
                 <div className="flex gap-3 text-sm mt-2">
                   <span className="badge badge-ghost">
-                    {movie.release_year}
+                    {movies[currentIndex].release_year}
                   </span>
                   <span>
-                    ⭐ {movie.rating ? movie.rating.toFixed(1) : 'N/A'}
+                    ⭐{' '}
+                    {movies[currentIndex].rating
+                      ? movies[currentIndex].rating.toFixed(1)
+                      : 'N/A'}
                   </span>
                 </div>
               </div>
             </div>
           </TinderCard>
-        ))}
+        )}
       </div>
 
       {/* Swipe Instructions & Counter */}
@@ -120,12 +125,13 @@ const MovieCards = () => {
         </div>
       </div>
 
-      {/* Swipe Buttons (for desktop users) */}
+      {/* Swipe Buttons */}
       <div className="flex gap-8">
         <button
           onClick={() => {
-            // You can trigger programmatic swipes if needed
-            console.log('Pass clicked')
+            if (cardRef.current) {
+              cardRef.current.swipe('left')
+            }
           }}
           className="btn btn-circle btn-lg btn-error shadow-xl hover:scale-110 transition-transform"
         >
@@ -134,8 +140,9 @@ const MovieCards = () => {
 
         <button
           onClick={() => {
-            // You can trigger programmatic swipes if needed
-            console.log('Like clicked')
+            if (cardRef.current) {
+              cardRef.current.swipe('right')
+            }
           }}
           className="btn btn-circle btn-lg btn-success shadow-xl hover:scale-110 transition-transform"
         >
