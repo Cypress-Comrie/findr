@@ -30,6 +30,7 @@
     "@react-spring/web": "^9.5.5",
     "express": "^4.17.2",
     "knex": "^2.5.1",
+    "lucide-react": "^0.562.0",
     "react-tinder-card": "^1.6.4",
     "sqlite3": "^5.1.7",
     "superagent": "^10.2.1"
