@@ -2,7 +2,6 @@ import express from 'express'
 import * as db from '../db/swipes'
 
 const router = express.Router()
-// POST /api/swipes - Save a swipe (userId, movieId, liked)
 
 // Getting all users personal watchlisted movies
 router.get('/:userId', async (req, res) => {
@@ -17,6 +16,7 @@ router.get('/:userId', async (req, res) => {
 })
 
 // gets the data from your swipes Example: your userId, the MovieId, True or False on the liked section
+// SwipeData sections is for grabbing the data we need from up above and then filling it out with the new swipe
 router.post('/', async (req, res) => {
   try {
     const SwipeData = { ...req.body }
