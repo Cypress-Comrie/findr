@@ -1,8 +1,25 @@
-import { useWatchlist } from '../context/WatchlistContext'
-import { Trash2 } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import { getPersonalWatchlist } from '../apis/watchlist'
 
 const WatchList = () => {
-  const { watchlist, removeFromWatchlist, clearWatchlist } = useWatchlist()
+  const userId = 1 // use this for testing then will implement auth
+
+  const {
+    data: watchlist = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['watchlist', userId],
+    queryFn: () => getPersonalWatchlist(userId),
+  })
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
+  if (error) {
+    return <div>Error Loading Wacthlist</div>
+  }
 
   if (watchlist.length === 0) {
     return (
@@ -23,14 +40,6 @@ const WatchList = () => {
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-3xl font-bold">Your Watchlist</h2>
-          {watchlist.length > 0 && (
-            <button
-              onClick={clearWatchlist}
-              className="btn btn-outline btn-error"
-            >
-              Clear Watchlist
-            </button>
-          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -64,15 +73,6 @@ const WatchList = () => {
                       ⭐ {movie.rating.toFixed(1)}
                     </span>
                   )}
-                </div>
-                <div className="card-actions justify-end mt-4">
-                  <button
-                    onClick={() => removeFromWatchlist(movie.tmdb_id)}
-                    className="btn btn-sm btn-error btn-outline"
-                  >
-                    <Trash2 size={16} />
-                    Remove
-                  </button>
                 </div>
               </div>
             </div>
