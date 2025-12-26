@@ -1,11 +1,14 @@
 import express from 'express'
 import * as Path from 'node:path'
+import matches from './routes/matches'
+import swipes from './routes/swipes'
 
 const server = express()
 
 server.use(express.json())
 
-// Fruit routes removed
+server.use('/api/v1/matches', matches)
+server.use('/api/v1/swipes', swipes)
 
 if (process.env.NODE_ENV === 'production') {
   server.use(express.static(Path.resolve('public')))
