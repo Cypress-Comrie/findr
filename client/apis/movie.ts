@@ -1,5 +1,6 @@
 import request from 'superagent'
 import { MovieData } from '../../models/movies'
+import { SwipeData } from '../../models/swipes.js'
 import { API_KEY } from '../TMDB.js'
 import { BASE_URL } from '../TMDB.js'
 
