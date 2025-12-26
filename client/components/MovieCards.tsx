@@ -1,20 +1,22 @@
 import { getPopularMovies } from '../apis/movie'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState, useRef } from 'react'
 import TinderCard from 'react-tinder-card'
-import { Flag, HeartCrack, Heart } from 'lucide-react'
-import { useWatchlist } from '../context/WatchlistContext'
+import { HeartCrack, Heart } from 'lucide-react'
+import { getPersonalWatchlist } from '../apis/watchlist'
+import { useAuth0 } from '@auth0/auth0-react'
+import request from 'superagent'
+const rootURL = new URL(`/api/v1`, document.baseURI)
+
+
 // TODO check if parnters swiped yes on same
 const MovieCards = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const cardRef = useRef<any>(null)
-  const { addToWatchlist } = useWatchlist()
+  const queryClient = useQueryClient()
+  const { user, isLoading, isAuthenticated } = useAuth0()
 
-  const {
-    data: movies = [],
-    isLoading,
-    error,
-  } = useQuery({
+  const { data: movies = [], error } = useQuery({
     queryKey: ['movies'],
     queryFn: async () => {
       console.log(' Fetching movies...')
@@ -25,6 +27,12 @@ const MovieCards = () => {
       return allMovies.slice(0, 30)
     },
   })
+
+  //mutation to save swipes to database
+  const swipeMutation = useMutation({
+    mutationFn: async, (Swipe)
+  })
+
   // lets us know which way we swapped and what we want to do with that
   const onSwipe = (direction: string, movie: any) => {
     console.log(`You swiped ${direction} on ${movie.title}`)

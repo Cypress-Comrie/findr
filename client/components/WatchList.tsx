@@ -1,14 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
 import { getPersonalWatchlist } from '../apis/watchlist'
+import { useAuth0 } from '@auth0/auth0-react'
 
 const WatchList = () => {
   const userId = 1 // use this for testing then will implement auth
+  const { user, isLoading, isAuthenticated } = useAuth0()
 
-  const {
-    data: watchlist = [],
-    isLoading,
-    error,
-  } = useQuery({
+  const { data: watchlist = [], error } = useQuery({
     queryKey: ['watchlist', userId],
     queryFn: () => getPersonalWatchlist(userId),
   })
@@ -39,6 +37,7 @@ const WatchList = () => {
     <div className="min-h-screen p-6 bg-base-200">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
+          {isAuthenticated && <p>Hello {user?.name}</p>}
           <h2 className="text-3xl font-bold">Your Watchlist</h2>
         </div>
 
