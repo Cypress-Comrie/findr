@@ -35,6 +35,16 @@ function App() {
                 >
                   Watchlist
                 </Link>
+                <Link
+                  to="/sharedwatchlist"
+                  className={`px-4 py-2 rounded ${
+                    location.pathname === '/sharedwatchlist'
+                      ? 'bg-purple-700 underline'
+                      : 'hover:bg-purple-500'
+                  }`}
+                >
+                  Shared Watchlist
+                </Link>
               </>
             )}
             {isAuthenticated ? <LogoutButton /> : <LoginButton />}

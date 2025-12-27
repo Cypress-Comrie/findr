@@ -4,6 +4,7 @@ import App from './components/App'
 import MovieCards from './components/MovieCards'
 import WatchList from './components/WatchList'
 import ProtectedRoute from './components/ProtectedRoute'
+import SharedWatchlist from './components/SharedWatchList'
 
 const routes = createRoutesFromElements(
   <Route path="/" element={<App />}>
@@ -28,6 +29,14 @@ const routes = createRoutesFromElements(
       element={
         <ProtectedRoute>
           <MovieCards />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="shared-watchlist"
+      element={
+        <ProtectedRoute>
+          <SharedWatchlist />
         </ProtectedRoute>
       }
     />
