@@ -3,67 +3,89 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState, useRef } from 'react'
 import TinderCard from 'react-tinder-card'
 import { HeartCrack, Heart } from 'lucide-react'
-import { getPersonalWatchlist } from '../apis/watchlist'
-import { useAuth0 } from '@auth0/auth0-react'
 import request from 'superagent'
+import { useAuth0 } from '@auth0/auth0-react'
+
 const rootURL = new URL(`/api/v1`, document.baseURI)
 
-
-// TODO check if parnters swiped yes on same
 const MovieCards = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const cardRef = useRef<any>(null)
   const queryClient = useQueryClient()
-  const { user, isLoading, isAuthenticated } = useAuth0()
+  const userId = 1 // TODO: Get from auth
 
-  const { data: movies = [], error } = useQuery({
+  const {
+    data: movies = [],
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['movies'],
     queryFn: async () => {
-      console.log(' Fetching movies...')
       const allMovies = await getPopularMovies()
-      console.log(' Received movies:', allMovies)
-      console.log(' Number of movies:', allMovies?.length)
-
       return allMovies.slice(0, 30)
     },
   })
 
-  //mutation to save swipes to database
+  // Mutation to save swipe to database
   const swipeMutation = useMutation({
-    mutationFn: async, (Swipe)
+    mutationFn: async (swipeData: {
+      user_id: number
+      movie_id: number
+      liked: boolean
+    }) => {
+      const res = await request.post(`${rootURL}/swipes`).send(swipeData)
+      return res.body
+    },
+    onSuccess: (data) => {
+      console.log('✅ Swipe saved:', data)
+      // Invalidate watchlist to refetch
+      queryClient.invalidateQueries({ queryKey: ['watchlist', userId] })
+
+      if (data.isMatch) {
+        console.log("🎉 IT'S A MATCH!")
+        // TODO: Show match notification
+      }
+    },
+    onError: (error) => {
+      console.error('❌ Failed to save swipe:', error)
+    },
   })
 
-  // lets us know which way we swapped and what we want to do with that
   const onSwipe = (direction: string, movie: any) => {
     console.log(`You swiped ${direction} on ${movie.title}`)
 
-    if (direction == 'right') {
-      console.log('Added to watchlist:', movie.title)
-      addToWatchlist(movie)
-    }
-
-    if (direction == 'left') {
-      console.log('you passed on:', movie.title)
-    }
+    // Save swipe to database
+    swipeMutation.mutate({
+      user_id: userId,
+      movie_id: movie.tmdb_id,
+      liked: direction === 'right',
+    })
   }
 
-  // lets us know its seen the movie leave and changed to the next
   const onCardLeftScreen = (movie: any) => {
     console.log(`${movie.title} left the screen`)
     setCurrentIndex((prev) => prev + 1)
   }
 
   if (isLoading) {
-    return 'loading...'
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    )
   }
 
   if (error) {
-    return 'Error Loading'
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="alert alert-error">Error Loading Movies</div>
+      </div>
+    )
   }
-  // Using figure instead of a div tag -- learnt figure is better for stand alone content perfect for the posters
+
   if (currentIndex >= movies.length) {
     return (
-      <div className="flex flec-col items-center justify-center min-h-screen gap-4">
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
         <h2 className="text-3xl font-bold">No more movies! 🎬</h2>
         <button
           className="btn btn-primary gap-2"
@@ -77,9 +99,7 @@ const MovieCards = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-base-200">
-      {/* Card Stack Container */}
       <div className="relative w-full max-w-sm md:max-w-md lg:max-w-lg h-[600px] mb-8">
-        {/* Only render the current swipeable card - no background cards */}
         {currentIndex < movies.length && (
           <TinderCard
             ref={cardRef}
@@ -125,7 +145,6 @@ const MovieCards = () => {
         )}
       </div>
 
-      {/* Swipe Instructions & Counter */}
       <div className="text-center mb-4">
         <p className="text-sm opacity-70">Swipe right to like, left to pass</p>
         <div className="text-sm font-semibold mt-2">
@@ -133,7 +152,6 @@ const MovieCards = () => {
         </div>
       </div>
 
-      {/* Swipe Buttons */}
       <div className="flex gap-8">
         <button
           onClick={() => {
@@ -142,6 +160,7 @@ const MovieCards = () => {
             }
           }}
           className="btn btn-circle btn-lg btn-error shadow-xl hover:scale-110 transition-transform"
+          disabled={swipeMutation.isPending}
         >
           <HeartCrack size={32} strokeWidth={3} />
         </button>
@@ -153,6 +172,7 @@ const MovieCards = () => {
             }
           }}
           className="btn btn-circle btn-lg btn-success shadow-xl hover:scale-110 transition-transform"
+          disabled={swipeMutation.isPending}
         >
           <Heart size={32} strokeWidth={3} />
         </button>
