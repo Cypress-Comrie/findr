@@ -2,9 +2,10 @@ import express from 'express'
 import * as Path from 'node:path'
 import matches from './routes/matches'
 import swipes from './routes/swipes'
+import cors from 'cors'
 
 const server = express()
-
+server.use(cors())
 server.use(express.json())
 
 server.use('/api/v1/matches', matches)

@@ -21,7 +21,7 @@ export async function createSwipe(swipeData: SwipeData): Promise<Swipe> {
 // then gives back the movie with all its info
 export async function getUserWatchList(user_id: number): Promise<Movie[]> {
   return await db('swipes')
-    .join('movies', 'swipes.movie_id', 'movies.id')
+    .join('movies', 'swipes.movie_id', 'movies.tmdb_id')
     .where({ 'swipes.user_id': user_id, 'swipes.liked': true })
     .select('movies.*')
 }

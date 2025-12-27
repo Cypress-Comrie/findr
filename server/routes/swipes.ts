@@ -2,6 +2,7 @@ import express from 'express'
 import * as db from '../db/swipes'
 import * as matchesDb from '../db/matches'
 import { matchRoutes } from 'react-router'
+import connection from '../db/connection'
 
 const router = express.Router()
 
@@ -48,6 +49,38 @@ router.post('/', async (req, res) => {
   } catch (error) {
     console.log(error)
     res.status(500).json({ error: 'something went wrong with swipe' })
+  }
+})
+
+// In server/routes/swipes.ts
+router.get('/debug/check/:userId', async (req, res) => {
+  try {
+    const userId = Number(req.params.userId)
+
+    // Use 'connection' not 'db' for raw queries
+    const swipes = await connection('swipes')
+      .where({ user_id: userId })
+      .select('*')
+
+    const movies = await connection('movies').select('id', 'tmdb_id', 'title')
+
+    const watchlist = await connection('swipes')
+      .join('movies', 'swipes.movie_id', 'movies.tmdb_id')
+      .where({ 'swipes.user_id': userId, 'swipes.liked': true })
+      .select('movies.*')
+
+    res.json({
+      userId,
+      swipesCount: swipes.length,
+      swipes,
+      moviesCount: movies.length,
+      movies: movies.slice(0, 5),
+      watchlistCount: watchlist.length,
+      watchlist,
+    })
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: error.message })
   }
 })
 
