@@ -7,7 +7,7 @@ import { Relationship, RelationshipData } from '../../models/relationships'
 // merges togther the movies and matches collums then provides the movies when the relationship id matches
 export async function GetMatches(relationship_id: number): Promise<Match[]> {
   return await db('matches')
-    .join('movies', 'matches.movie_id', 'movie.id')
+    .join('movies', 'matches.movie_id', 'movie.tmdb_id')
     .where({ 'matches.relationship_id ': relationship_id })
     .select('movies.*')
 }
