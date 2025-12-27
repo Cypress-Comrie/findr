@@ -52,36 +52,4 @@ router.post('/', async (req, res) => {
   }
 })
 
-// In server/routes/swipes.ts
-router.get('/debug/check/:userId', async (req, res) => {
-  try {
-    const userId = Number(req.params.userId)
-
-    // Use 'connection' not 'db' for raw queries
-    const swipes = await connection('swipes')
-      .where({ user_id: userId })
-      .select('*')
-
-    const movies = await connection('movies').select('id', 'tmdb_id', 'title')
-
-    const watchlist = await connection('swipes')
-      .join('movies', 'swipes.movie_id', 'movies.tmdb_id')
-      .where({ 'swipes.user_id': userId, 'swipes.liked': true })
-      .select('movies.*')
-
-    res.json({
-      userId,
-      swipesCount: swipes.length,
-      swipes,
-      moviesCount: movies.length,
-      movies: movies.slice(0, 5),
-      watchlistCount: watchlist.length,
-      watchlist,
-    })
-  } catch (error) {
-    console.error(error)
-    res.status(500).json({ error: error.message })
-  }
-})
-
 export default router
