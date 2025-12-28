@@ -3,6 +3,7 @@ import connection from '../db/connection'
 
 const router = express.Router()
 
+// Post route for finding/Creating a user
 router.post('/auth0', async (req, res) => {
   try {
     const { auth0_id, email, name } = req.body
