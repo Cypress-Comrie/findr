@@ -6,22 +6,40 @@ import db from './connection'
 
 // creates swipe info for the database
 export async function createSwipe(swipeData: SwipeData): Promise<Swipe> {
-  const [Swipe] = await db('swipes')
+  let movie = await db<Movie>('movies')
+    .where('tmdb_id', swipeData.movie_id)
+    .first()
+
+  if (!movie) {
+    const [insertedMovie] = await db<Movie>('movies')
+      .insert({
+        tmdb_id: swipeData.movie_id,
+        title: swipeData.title,
+        poster_path: swipeData.poster_path,
+        overview: swipeData.overview,
+        release_date: swipeData.release_date,
+      })
+      .returning('*')
+
+    movie = insertedMovie
+  }
+
+  const [swipe] = await db('swipes')
     .insert({
       user_id: swipeData.user_id,
-      movie_id: swipeData.movie_id,
+      movie_id: movie.id,
       liked: swipeData.liked,
     })
     .returning('*')
 
-  return Swipe
+  return swipe
 }
 
 // gets the movies from a user watchlist. joins the movies and the swipes tables to see when a user swiped on a movie
 // then gives back the movie with all its info
 export async function getUserWatchList(user_id: number): Promise<Movie[]> {
   return await db('swipes')
-    .join('movies', 'swipes.movie_id', 'movies.tmdb_id')
+    .join('movies', 'swipes.movie_id', 'movies.id')
     .where({ 'swipes.user_id': user_id, 'swipes.liked': true })
     .select('movies.*')
 }
@@ -30,7 +48,7 @@ export async function getUserWatchList(user_id: number): Promise<Movie[]> {
 export async function checkForMatch(
   user_id: number,
   relationship_id: number,
-  movie_id: number,
+  tmdb_movie_id: number,
 ): Promise<boolean> {
   const relationship = await db<Relationship>('relationships')
     .where('id', relationship_id)
@@ -38,15 +56,21 @@ export async function checkForMatch(
 
   if (!relationship) return false
 
-  const PartnerId =
+  const movie = await db<Movie>('movies')
+    .where('tmdb_id', tmdb_movie_id)
+    .first()
+
+  if (!movie) return false
+
+  const partnerId =
     relationship.user1_id === user_id
       ? relationship.user2_id
       : relationship.user1_id
 
   const partnerSwipe = await db<Swipe>('swipes')
     .where({
-      user_id: PartnerId,
-      movie_id: movie_id,
+      user_id: partnerId,
+      movie_id: movie.id, // ✅ INTERNAL ID
       liked: true,
     })
     .first()
