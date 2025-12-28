@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { getSharedWatchlist } from '../apis/watchlist'
 import { useAuth0 } from '@auth0/auth0-react'
 
+// very similar to how the personal watchlist works except grabs relationship id
 const SharedWatchlist = () => {
   const relationshipId = 1
   const { user, isLoading, isAuthenticated } = useAuth0()
