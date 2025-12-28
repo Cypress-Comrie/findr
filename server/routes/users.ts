@@ -11,7 +11,7 @@ router.post('/auth0', async (req, res) => {
 
     if (!user) {
       const [newUser] = await connection('users')
-        .insert({ auth0_id, email, name })
+        .insert({ auth0_id, email, full_name: name })
         .returning('*')
       user = newUser
     }

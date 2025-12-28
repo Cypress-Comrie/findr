@@ -18,36 +18,46 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const { user, isAuthenticated, isLoading: auth0Loading } = useAuth0()
   const [userId, setUserId] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  console.log('AUTH0 STATE', {
+    auth0Loading,
+    isAuthenticated,
+    user,
+  })
 
   useEffect(() => {
-    async function fetchUserId() {
-      if (!isAuthenticated || !user) {
-        setUserId(null)
-        setIsLoading(false)
-        return
-      }
+    if (auth0Loading) return
 
+    // Not logged in
+    if (!isAuthenticated) {
+      setUserId(null)
+      setIsLoading(false)
+      return
+    }
+
+    // Logged in but user profile not ready yet
+    if (!user) return
+
+    async function fetchUserId() {
       try {
-        console.log(' Fetching user ID for:', user.sub)
+        console.log('Fetching user ID for:', user.sub)
+
         const res = await request.post(`${rootURL}/users/auth0`).send({
           auth0_id: user.sub,
           email: user.email,
           name: user.name,
         })
 
-        console.log(' User ID:', res.body.id)
         setUserId(res.body.id)
       } catch (error) {
-        console.error(' Failed to fetch user:', error)
+        console.error('Failed to fetch user:', error)
+        setUserId(null)
       } finally {
         setIsLoading(false)
       }
     }
 
-    if (!auth0Loading) {
-      fetchUserId()
-    }
-  }, [user, isAuthenticated, auth0Loading])
+    fetchUserId()
+  }, [auth0Loading, isAuthenticated, user])
 
   return (
     <UserContext.Provider value={{ userId, isLoading }}>

@@ -4,13 +4,13 @@
  */
 export function up(knex) {
   return knex.schema.createTable('movies', (table) => {
-    table.increments('id').primary() // Changed from string to auto-increment
-    table.integer('tmdb_id').notNullable().unique() // Changed from imdb_id to tmdb_id
+    table.increments('id').primary()
+    table.integer('tmdb_id').notNullable().unique()
     table.string('title').notNullable()
-    table.integer('release_year') // Changed from 'year' string to 'release_year' integer
-    table.string('poster_url') // Changed from 'poster' to 'poster_url'
+    table.string('release_date')
+    table.string('poster_path')
     table.string('genres')
-    table.text('description') // Changed to text for longer descriptions
+    table.text('overview')
     table.float('rating')
   })
 }

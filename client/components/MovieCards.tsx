@@ -4,15 +4,16 @@ import { useState, useRef } from 'react'
 import TinderCard from 'react-tinder-card'
 import { HeartCrack, Heart } from 'lucide-react'
 import request from 'superagent'
-import { useAuth0 } from '@auth0/auth0-react'
+import { useUser } from '../context/UserContext'
 
-const rootURL = new URL(`/api/v1`, document.baseURI)
+const rootURL = 'http://localhost:3000/api/v1'
 
 const MovieCards = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const cardRef = useRef<any>(null)
   const queryClient = useQueryClient()
-  const userId = 1 // TODO: Get from auth
+  // const userId = 1 // TODO: Get from auth
+  const { userId, isLoading: userLoading } = useUser()
 
   const {
     data: movies = [],
@@ -32,6 +33,10 @@ const MovieCards = () => {
       user_id: number
       movie_id: number
       liked: boolean
+      title: string
+      poster_path: string
+      overview: string
+      release_date: string
     }) => {
       const res = await request.post(`${rootURL}/swipes`).send(swipeData)
       return res.body
@@ -52,6 +57,10 @@ const MovieCards = () => {
   })
 
   const onSwipe = (direction: string, movie: any) => {
+    if (!userId) {
+      console.log('No userID to save swipe too')
+      return
+    }
     console.log(`You swiped ${direction} on ${movie.title}`)
 
     // Save swipe to database
@@ -59,6 +68,10 @@ const MovieCards = () => {
       user_id: userId,
       movie_id: movie.tmdb_id,
       liked: direction === 'right',
+      title: movie.title,
+      poster_path: movie.poster_url,
+      overview: movie.description,
+      release_date: movie.release_year?.toString() ?? '',
     })
   }
 

@@ -18,7 +18,7 @@ const WatchList = () => {
     enabled: !!userId,
   })
 
-  if (userLoading || queryLoading) {
+  if (queryLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <span className="loading loading-spinner loading-lg"></span>

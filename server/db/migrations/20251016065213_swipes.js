@@ -4,9 +4,9 @@
  */
 export function up(knex) {
   return knex.schema.createTable('swipes', (table) => {
-    table.string('id').primary()
-    table.string('movie_id')
-    table.string('user_id')
+    table.increments('id').primary()
+    table.integer('movie_id').notNullable()
+    table.integer('user_id').notNullable()
     table.boolean('liked')
   })
 }

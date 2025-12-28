@@ -11,7 +11,7 @@ server.use(express.json())
 
 server.use('/api/v1/matches', matches)
 server.use('/api/v1/swipes', swipes)
-server.use('/api/v1/swipes', users)
+server.use('/api/v1/users', users)
 
 if (process.env.NODE_ENV === 'production') {
   server.use(express.static(Path.resolve('public')))
