@@ -1,22 +1,46 @@
 import { useQuery } from '@tanstack/react-query'
 import { getPersonalWatchlist } from '../apis/watchlist'
+import { useUser } from '../context/UserContext'
 import { useAuth0 } from '@auth0/auth0-react'
 
 const WatchList = () => {
-  const userId = 1 // use this for testing then will implement auth
-  const { user, isLoading, isAuthenticated } = useAuth0()
+  // const userId = 1 // use this for testing then will implement auth
+  const { userId, isLoading: userLoading } = useUser()
+  const { user, isAuthenticated } = useAuth0()
 
-  const { data: watchlist = [], error } = useQuery({
+  const {
+    data: watchlist = [],
+    error,
+    isLoading: queryLoading,
+  } = useQuery({
     queryKey: ['watchlist', userId],
-    queryFn: () => getPersonalWatchlist(userId),
+    queryFn: () => getPersonalWatchlist(userId!),
+    enabled: !!userId,
   })
 
-  if (isLoading) {
-    return <div>Loading...</div>
+  if (userLoading || queryLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-6">
+        <h2 className="text-3xl font-bold mb-4">Please Log In</h2>
+        <p>You need to log in to see your watchlist</p>
+      </div>
+    )
   }
 
   if (error) {
-    return <div>Error Loading Wacthlist</div>
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="alert alert-error">Error Loading Watchlist</div>
+      </div>
+    )
   }
 
   if (watchlist.length === 0) {
