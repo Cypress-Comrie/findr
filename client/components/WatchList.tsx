@@ -1,12 +1,15 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getPersonalWatchlist } from '../apis/watchlist'
+import { deleteFromPersonalWatchlist } from '../apis/watchlist'
 import { useUser } from '../context/UserContext'
 import { useAuth0 } from '@auth0/auth0-react'
+import { getMovieDetails } from '../apis/movie'
 
 const WatchList = () => {
   // const userId = 1 // use this for testing then will implement auth
   const { userId, isLoading: userLoading } = useUser()
   const { user, isAuthenticated } = useAuth0()
+  const queryClient = useQueryClient()
 
   const {
     data: watchlist = [],
@@ -16,6 +19,14 @@ const WatchList = () => {
     queryKey: ['watchlist', userId],
     queryFn: () => getPersonalWatchlist(userId!),
     enabled: !!userId,
+  })
+
+  const removeMutation = useMutation({
+    mutationFn: ({ userId, movieId }: { userId: number; movieId: number }) =>
+      deleteFromPersonalWatchlist(userId, movieId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['watchlist', userId] })
+    },
   })
 
   if (queryLoading) {
@@ -96,6 +107,18 @@ const WatchList = () => {
                       ⭐ {movie.rating.toFixed(1)}
                     </span>
                   )}
+                  <button
+                    onClick={() =>
+                      removeMutation.mutate({
+                        userId: userId!,
+                        movieId: movie.tmdb_id,
+                      })
+                    }
+                    className="btn btn-sm btn-error btn-outline"
+                    disabled={removeMutation.isPending}
+                  >
+                    delete
+                  </button>
                 </div>
               </div>
             </div>
