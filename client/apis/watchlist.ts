@@ -15,3 +15,11 @@ export async function getSharedWatchlist(relationshipId: number) {
   const res = await request.get(`${rootURL}/matches/${relationshipId}`)
   return res.body
 }
+
+export async function deleteFromPersonalWatchlist(
+  userId: number,
+  movieId: number,
+) {
+  const res = await request.del(`${rootURL}/swipes/${userId}/${movieId}`)
+  return res.body
+}
