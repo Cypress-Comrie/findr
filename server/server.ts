@@ -3,6 +3,7 @@ import * as Path from 'node:path'
 import matches from './routes/matches'
 import swipes from './routes/swipes'
 import users from './routes/users'
+import relationship from './routes/relationship'
 import cors from 'cors'
 
 const server = express()
@@ -12,6 +13,7 @@ server.use(express.json())
 server.use('/api/v1/matches', matches)
 server.use('/api/v1/swipes', swipes)
 server.use('/api/v1/users', users)
+server.use('/api/v1/relationships', relationship)
 
 if (process.env.NODE_ENV === 'production') {
   server.use(express.static(Path.resolve('public')))

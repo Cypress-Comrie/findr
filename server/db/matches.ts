@@ -7,9 +7,18 @@ import { Relationship, RelationshipData } from '../../models/relationships'
 // merges togther the movies and matches collums then provides the movies when the relationship id matches
 export async function GetMatches(relationship_id: number): Promise<Match[]> {
   return await db('matches')
-    .join('movies', 'matches.movie_id', 'movie.tmdb_id')
-    .where({ 'matches.relationship_id ': relationship_id })
-    .select('movies.*')
+    .join('movies', 'matches.movie_id', 'movies.id')
+    .where({ 'matches.relationship_id': relationship_id })
+    .select(
+      'movies.id',
+      'movies.tmdb_id',
+      'movies.title',
+      'movies.rating',
+      db.raw('movies.release_date as release_year'),
+      db.raw('movies.poster_path as poster_url'),
+      db.raw('movies.overview as description'),
+      'movies.genres',
+    )
 }
 
 export async function createMatches(

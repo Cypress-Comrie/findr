@@ -1,23 +1,98 @@
 import { useQuery } from '@tanstack/react-query'
 import { getSharedWatchlist } from '../apis/watchlist'
 import { useAuth0 } from '@auth0/auth0-react'
+import { useUser } from '../context/UserContext'
+import request from 'superagent'
+
+const rootURL = 'http://localhost:3000/api/v1'
 
 // very similar to how the personal watchlist works except grabs relationship id
 const SharedWatchlist = () => {
-  const relationshipId = 1
-  const { user, isLoading, isAuthenticated } = useAuth0()
+  const { userId, isLoading: userLoading } = useUser()
+  const { user, isAuthenticated } = useAuth0()
+
+  // First, fetch the user's relationships
+  const {
+    data: relationships = [],
+    error: relationshipsError,
+    isLoading: relationshipsLoading,
+  } = useQuery({
+    queryKey: ['relationships', userId],
+    queryFn: async () => {
+      if (!userId) return []
+      try {
+        const res = await request.get(`${rootURL}/relationships/${userId}`)
+        return res.body
+      } catch (error) {
+        console.error('Failed to fetch relationships:', error)
+        throw error
+      }
+    },
+    enabled: !!userId,
+  })
+
+  const relationshipId = relationships.length > 0 ? relationships[0].id : null
 
   const { data: watchlist = [], error } = useQuery({
     queryKey: ['watchlist', relationshipId],
-    queryFn: () => getSharedWatchlist(relationshipId),
+    queryFn: () => getSharedWatchlist(relationshipId!),
+    enabled: !!relationshipId,
   })
 
-  if (isLoading) {
-    ;<div>...Loading</div>
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-6">
+        <h2 className="text-3xl font-bold mb-4">Error Loading Watchlist</h2>
+        <p className="text-lg opacity-70 mb-4">
+          {error instanceof Error ? error.message : 'An error occurred'}
+        </p>
+        <p className="text-sm">Please try refreshing the page.</p>
+      </div>
+    )
   }
 
-  if (error) {
-    return <div>a wild error appeared </div>
+  if (userLoading || relationshipsLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    )
+  }
+
+  if (relationshipsError) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-6">
+        <h2 className="text-3xl font-bold mb-4">Error Loading Relationships</h2>
+        <p className="text-lg opacity-70 mb-4">
+          {relationshipsError instanceof Error
+            ? relationshipsError.message
+            : 'An error occurred'}
+        </p>
+        <p className="text-sm">Please try refreshing the page.</p>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-6">
+        <h2 className="text-3xl font-bold mb-4">Please Log In</h2>
+        <p>You need to log in to see your shared watchlist</p>
+      </div>
+    )
+  }
+
+  if (relationships.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-base-200">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold mb-4">No Relationships Yet</h2>
+          <p className="text-lg opacity-70">
+            You need to add a partner to view a shared watchlist.
+          </p>
+        </div>
+      </div>
+    )
   }
 
   if (watchlist.length === 0) {
