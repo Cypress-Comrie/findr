@@ -58,9 +58,14 @@ router.post('/', async (req, res) => {
   }
 })
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:movieId/:userId', async (req, res) => {
   try {
-    const movie = Number(req.params.id)
+    const movie = Number(req.params.movieId)
+    const user = Number(req.params.userId)
+    await db.deleteSwipe(movie, user)
+    res.json({ message: 'Swipe delted' })
+  } catch (error) {
+    res.status(500).json({ error: 'couldnt delete swipe' })
   }
 })
 
