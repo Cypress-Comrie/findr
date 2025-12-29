@@ -77,3 +77,11 @@ export async function checkForMatch(
 
   return !!partnerSwipe
 }
+
+// deletes a swipe determined by the userid and movieid
+export async function deleteSwipe(
+  userId: number,
+  movieId: number,
+): Promise<void> {
+  return db('swipes').where({ user_id: userId, movie_id: movieId }).del()
+}
