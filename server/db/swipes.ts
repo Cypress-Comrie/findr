@@ -53,7 +53,16 @@ export async function getUserWatchList(user_id: number): Promise<Movie[]> {
   return await db('swipes')
     .join('movies', 'swipes.movie_id', 'movies.id')
     .where({ 'swipes.user_id': user_id, 'swipes.liked': true })
-    .select('movies.*')
+    .select(
+      'movies.id',
+      'movies.tmdb_id',
+      'movies.title',
+      'movies.rating',
+      db.raw('movies.release_date as release_year'),
+      db.raw('movies.poster_path as poster_url'),
+      db.raw('movies.overview as description'),
+      'movies.genres',
+    )
 }
 
 // checks to see if youre in a relationship, if true checks if partner also liked the movie
