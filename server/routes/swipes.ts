@@ -1,6 +1,7 @@
 import express from 'express'
 import * as db from '../db/swipes'
 import * as matchesDb from '../db/matches'
+import { get } from 'node:http'
 
 const router = express.Router()
 
@@ -54,6 +55,12 @@ router.post('/', async (req, res) => {
   } catch (error) {
     console.error(error)
     res.status(500).json({ error: 'Something went wrong with swipe' })
+  }
+})
+
+router.delete('/:id', async (req, res) => {
+  try {
+    const movie = Number(req.params.id)
   }
 })
 
