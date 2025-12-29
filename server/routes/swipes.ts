@@ -1,7 +1,6 @@
 import express from 'express'
 import * as db from '../db/swipes'
 import * as matchesDb from '../db/matches'
-import { get } from 'node:http'
 
 const router = express.Router()
 
@@ -60,10 +59,10 @@ router.post('/', async (req, res) => {
 
 router.delete('/:movieId/:userId', async (req, res) => {
   try {
-    const movie = Number(req.params.movieId)
+    const movieTmdbId = Number(req.params.movieId)
     const user = Number(req.params.userId)
-    await db.deleteSwipe(movie, user)
-    res.json({ message: 'Swipe delted' })
+    await db.deleteSwipe(user, movieTmdbId)
+    res.json({ message: 'Swipe deleted' })
   } catch (error) {
     res.status(500).json({ error: 'couldnt delete swipe' })
   }

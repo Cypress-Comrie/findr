@@ -24,6 +24,18 @@ export async function createSwipe(swipeData: SwipeData): Promise<Swipe> {
     movie = insertedMovie
   }
 
+  // Check if a swipe already exists for this user and movie
+  const existingSwipe = await db('swipes')
+    .where({
+      user_id: swipeData.user_id,
+      movie_id: movie.id,
+    })
+    .first()
+
+  if (existingSwipe) {
+    return existingSwipe
+  }
+
   const [swipe] = await db('swipes')
     .insert({
       user_id: swipeData.user_id,
@@ -78,10 +90,17 @@ export async function checkForMatch(
   return !!partnerSwipe
 }
 
-// deletes a swipe determined by the userid and movieid
+// deletes a swipe determined by the userid and tmdb movie id
 export async function deleteSwipe(
   userId: number,
-  movieId: number,
+  tmdbMovieId: number,
 ): Promise<void> {
-  return db('swipes').where({ user_id: userId, movie_id: movieId }).del()
+  // First, find the internal movie ID using the TMDB ID
+  const movie = await db<Movie>('movies').where('tmdb_id', tmdbMovieId).first()
+
+  if (!movie) {
+    throw new Error(`Movie with TMDB ID ${tmdbMovieId} not found`)
+  }
+
+  return db('swipes').where({ user_id: userId, movie_id: movie.id }).del()
 }

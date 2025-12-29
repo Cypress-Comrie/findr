@@ -20,6 +20,6 @@ export async function deleteFromPersonalWatchlist(
   userId: number,
   movieId: number,
 ) {
-  const res = await request.del(`${rootURL}/swipes/${userId}/${movieId}`)
+  const res = await request.del(`${rootURL}/swipes/${movieId}/${userId}`)
   return res.body
 }
