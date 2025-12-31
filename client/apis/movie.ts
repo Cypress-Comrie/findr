@@ -3,6 +3,7 @@ import { MovieData } from '../../models/movies'
 import { SwipeData } from '../../models/swipes.js'
 import { API_KEY } from '../TMDB.js'
 import { BASE_URL } from '../TMDB.js'
+import { match } from 'node:assert'
 
 export async function getPopularMovies(): Promise<MovieData[]> {
   const response = await request
@@ -74,4 +75,8 @@ export async function searchMovies(query: string): Promise<MovieData[]> {
       description: movie.overview || '',
     }),
   )
+}
+
+export async function RandomMovie(): Promise<MovieData[]> {
+  const randomMovie = Math.floor(Math.random() * 500) + 1
 }
