@@ -4,6 +4,7 @@ import { SwipeData } from '../../models/swipes.js'
 import { API_KEY } from '../TMDB.js'
 import { BASE_URL } from '../TMDB.js'
 import { match } from 'node:assert'
+import { response } from 'express'
 
 export async function getPopularMovies(): Promise<MovieData[]> {
   const response = await request
@@ -77,6 +78,30 @@ export async function searchMovies(query: string): Promise<MovieData[]> {
   )
 }
 
-export async function RandomMovie(): Promise<MovieData[]> {
-  const randomMovie = Math.floor(Math.random() * 500) + 1
+export async function getRandomMovie(): Promise<MovieData> {
+  const randomPage = Math.floor(Math.random() * 500) + 1
+
+  const response = await request.get(`${BASE_URL}/movie/popular`).query({
+    api_key: API_KEY,
+    page: randomPage,
+  })
+
+  const movies = response.body.results
+  const randomIndex = Math.floor(Math.random() * movies.length)
+  const movie = movies[randomIndex]
+
+  // Transform to MovieData format
+  return {
+    tmdb_id: movie.id,
+    title: movie.title,
+    release_year: movie.release_date
+      ? new Date(movie.release_date).getFullYear()
+      : 0,
+    genres: movie.genre_ids ? movie.genre_ids.join(',') : '',
+    poster_url: movie.poster_path
+      ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+      : '',
+    rating: movie.vote_average || 0,
+    description: movie.overview || '',
+  }
 }
