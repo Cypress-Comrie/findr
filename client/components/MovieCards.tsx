@@ -5,6 +5,7 @@ import TinderCard from 'react-tinder-card'
 import { HeartCrack, Heart } from 'lucide-react'
 import request from 'superagent'
 import { useUser } from '../context/UserContext'
+import { getRandomMovie } from '../apis/movie'
 
 const rootURL = 'http://localhost:3000/api/v1'
 
@@ -22,8 +23,8 @@ const MovieCards = () => {
   } = useQuery({
     queryKey: ['movies'],
     queryFn: async () => {
-      const allMovies = await getPopularMovies()
-      return allMovies.slice(0, 30)
+      const allMovies = await getRandomMovie(30)
+      return allMovies
     },
   })
 
