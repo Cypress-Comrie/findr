@@ -36,6 +36,7 @@
     "lucide-react": "^0.562.0",
     "react-datepicker": "^9.1.0",
     "react-router-dom": "^7.11.0",
+    "react-select": "^5.10.2",
     "react-tinder-card": "^1.6.4",
     "sqlite3": "^5.1.7",
     "superagent": "^10.2.1"
