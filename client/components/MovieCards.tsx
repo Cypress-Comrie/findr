@@ -7,6 +7,7 @@ import request from 'superagent'
 import { useUser } from '../context/UserContext'
 import { getRandomMovie } from '../apis/movie'
 import YearDropDown from './dateButton'
+import { moviesByDate } from '../apis/movie'
 
 const rootURL = 'http://localhost:3000/api/v1'
 
@@ -115,7 +116,7 @@ const MovieCards = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-base-200">
       <div className="relative w-full max-w-sm md:max-w-md lg:max-w-lg h-[600px] mb-8">
-        <div className="z-10">
+        <div className="z-10 flex gap-8">
           <YearDropDown></YearDropDown>
         </div>
         {currentIndex < movies.length && (

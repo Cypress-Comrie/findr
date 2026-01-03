@@ -107,3 +107,29 @@ export async function getRandomMovie(count: number = 30): Promise<MovieData[]> {
     }),
   )
 }
+
+export async function moviesByDate(year: string): Promise<MovieData[]> {
+  const response = await request.get(`${BASE_URL}/discover/movie`).query({
+    api_key: API_KEY,
+    primary_release_year: year,
+    sort_by: 'popularity.desc',
+  })
+
+  const tmdbMovies = response.body.results
+
+  return tmdbMovies.map(
+    (movie: any): MovieData => ({
+      tmdb_id: movie.id,
+      title: movie.title,
+      release_year: movie.release_date
+        ? new Date(movie.release_date).getFullYear()
+        : 0,
+      genres: movie.genre_ids ? movie.genre_ids.join(',') : '',
+      poster_url: movie.poster_path
+        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+        : '',
+      rating: movie.vote_average || 0,
+      description: movie.overview || '',
+    }),
+  )
+}
