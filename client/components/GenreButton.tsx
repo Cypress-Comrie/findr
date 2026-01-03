@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import Select from 'react-select'
+import Select, { SingleValue } from 'react-select'
 
 interface GenreOption {
   value: string
@@ -33,21 +33,22 @@ interface GenrePickerProps {
 }
 
 export default function GenrePicker({ onGenreChange }: GenrePickerProps) {
-  const [selectedGenre, setSelectedGenre] = useState(null)
+  const [selectedGenre, setSelectedGenre] =
+    useState<SingleValue<GenreOption>>(null)
 
-  const handleChange = (option: any) => {
+  const handleChange = (option: SingleValue<GenreOption>) => {
     setSelectedGenre(option)
     onGenreChange(option ? option.value : null)
   }
 
   return (
-    <Select<GenreOption>
+    <Select
       options={genreOptions}
       value={selectedGenre}
       onChange={handleChange}
       placeholder="Select a genre..."
-      isSearchable // Allows filtering
-      isClearable // Allows removing selection
+      isSearchable
+      isClearable
     />
   )
 }
