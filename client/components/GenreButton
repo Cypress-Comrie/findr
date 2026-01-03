@@ -23,7 +23,11 @@ const genreOptions = [
   { value: '37', label: 'Western' },
 ]
 
-export default function GenrePicker() {
+interface GenrePickerProps {
+  onGenreChange: (genreId: string | null) => void
+}
+
+export default function GenrePicker({ onGenreChange }: GenrePickerProps) {
   const [selectedGenre, setSelectedGenre] = useState(null)
 
   return (
