@@ -128,7 +128,7 @@ const MovieCards = () => {
       </div>
     )
   }
-
+  // add genre checker api side update this file with it
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-base-200">
       <div className="relative w-full max-w-sm md:max-w-md lg:max-w-lg h-[600px] mb-8">
