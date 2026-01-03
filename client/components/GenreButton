@@ -1,7 +1,12 @@
 import { useState } from 'react'
 import Select from 'react-select'
 
-const genreOptions = [
+interface GenreOption {
+  value: string
+  label: string
+}
+
+const genreOptions: GenreOption[] = [
   { value: '28', label: 'Action' },
   { value: '12', label: 'Adventure' },
   { value: '16', label: 'Animation' },
@@ -30,11 +35,16 @@ interface GenrePickerProps {
 export default function GenrePicker({ onGenreChange }: GenrePickerProps) {
   const [selectedGenre, setSelectedGenre] = useState(null)
 
+  const handleChange = (option: any) => {
+    setSelectedGenre(option)
+    onGenreChange(option ? option.value : null)
+  }
+
   return (
-    <Select
+    <Select<GenreOption>
       options={genreOptions}
       value={selectedGenre}
-      onChange={setSelectedGenre}
+      onChange={handleChange}
       placeholder="Select a genre..."
       isSearchable // Allows filtering
       isClearable // Allows removing selection
