@@ -13,6 +13,7 @@ const rootURL = 'http://localhost:3000/api/v1'
 
 const MovieCards = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [selectedYear, setSelectedYear] = useState<string | null>(null)
   const cardRef = useRef<any>(null)
   const queryClient = useQueryClient()
   // const userId = 1 // TODO: Get from auth
@@ -23,8 +24,11 @@ const MovieCards = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['movies'],
+    queryKey: ['movies', selectedYear],
     queryFn: async () => {
+      if (selectedYear) {
+        return moviesByDate(selectedYear)
+      }
       const allMovies = await getRandomMovie(30)
       return allMovies
     },
@@ -83,6 +87,11 @@ const MovieCards = () => {
     setCurrentIndex((prev) => prev + 1)
   }
 
+  const handleYearChange = (year: string) => {
+    setSelectedYear(year)
+    setCurrentIndex(0)
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -116,8 +125,16 @@ const MovieCards = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-base-200">
       <div className="relative w-full max-w-sm md:max-w-md lg:max-w-lg h-[600px] mb-8">
-        <div className="z-10 flex gap-8">
-          <YearDropDown></YearDropDown>
+        <div className="z-10 flex gap-8 mb-4">
+          <YearDropDown onYearChange={handleYearChange} />
+          {selectedYear && (
+            <button
+              onClick={() => setSelectedYear(null)}
+              className="btn btn-sm btn-ghost"
+            >
+              Clear Filter
+            </button>
+          )}
         </div>
         {currentIndex < movies.length && (
           <TinderCard
