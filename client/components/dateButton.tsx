@@ -8,10 +8,13 @@ interface YearDropDownProps {
 
 const YearDropDown = ({ onYearChange }: YearDropDownProps) => {
   const [startDate, setStartDate] = useState(new Date())
+
   const handleChange = (date: Date | null) => {
+    setStartDate(null)
     if (date) {
-      setStartDate(date)
       onYearChange(date.getFullYear().toString())
+    } else {
+      onYearChange(null)
     }
   }
 
@@ -21,7 +24,9 @@ const YearDropDown = ({ onYearChange }: YearDropDownProps) => {
       onChange={handleChange}
       showYearPicker
       dateFormat="yyyy"
+      placeholderText="Choose Date!"
       className="input input-bordered"
+      isClearable
     />
   )
 }
