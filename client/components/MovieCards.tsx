@@ -8,12 +8,14 @@ import { useUser } from '../context/UserContext'
 import { getRandomMovie } from '../apis/movie'
 import YearDropDown from './dateButton'
 import { moviesByDate } from '../apis/movie'
+import GenrePicker from './GenreButton'
 
 const rootURL = 'http://localhost:3000/api/v1'
 
 const MovieCards = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedYear, setSelectedYear] = useState<string | null>(null)
+  const [selectedGenre, setSelectedGenre] = useState<string | null>(null)
   const cardRef = useRef<any>(null)
   const queryClient = useQueryClient()
   // const userId = 1 // TODO: Get from auth
@@ -92,6 +94,11 @@ const MovieCards = () => {
     setCurrentIndex(0)
   }
 
+  const handleGenreChange = (genreId: string | null) => {
+    setSelectedGenre(genreId)
+    setCurrentIndex(0)
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -126,6 +133,7 @@ const MovieCards = () => {
     <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-base-200">
       <div className="relative w-full max-w-sm md:max-w-md lg:max-w-lg h-[600px] mb-8">
         <div className="z-10 flex gap-8 mb-4">
+          <GenrePicker onGenreChange={handleGenreChange} />
           <YearDropDown onYearChange={handleYearChange} />
           {selectedYear && (
             <button
